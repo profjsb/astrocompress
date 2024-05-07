@@ -1,3 +1,55 @@
+"""
+NAME
+    make_sdss_cubes.py - Make a sample of data cubes from the SDSS data. 
+    This will make n_sample datacubes each of size 
+    (max_mosaics_per_band, len(bands), size[0], size[1])
+
+SYNOPSIS
+    make_sdss_cubes.py <flags>
+
+DESCRIPTION
+    n_sample : int
+        The number of samples to make, default is 5
+    size : tuple
+        The 2-d size of the cube to make, default is (512, 512)
+    bands : list
+        The bands to use, default is ["u","g","r", "i", "z"]
+    data_dir : Path
+        The directory to save the data in
+    max_mosaics_per_band : int or None
+        The maximum number of mosaics to use per band, default is None (use all)
+    random_state : int or random.RandomState
+        The random state to use for the sample, default is 42
+
+FLAGS
+    -n, --n_sample=N_SAMPLE
+        Default: 5
+    -b, --bands=BANDS
+        Default: ['u', 'g', 'r', 'i', 'z']
+    -s, --size=SIZE
+        Default: (512, 512)
+    -d, --data_dir=DATA_DIR
+        Default: PosixPat...
+    -m, --max_mosaics_per_band=MAX_MOSAICS_PER_BAND
+        Default: 2
+    -r, --random_state=RANDOM_STATE
+        Default: 42
+
+EXAMPLES:
+  python make_sdss_cubes.py -n 10 -b ['u', 'g', 'r', 'i', 'z'] -s (512, 512) \
+                       -d PosixPath('../../data/integer/imaging/sci/') -m 2 -r 42
+    -> Makes 10 data cubes from the SDSS data, each of size (2, 5, 512, 512)
+
+  python make_sdss_cubes.py -n 5 -b ['r'] -s (512, 512) \
+                          -d PosixPath('../../data/integer/imaging/sci/') -m 15 -r 42
+    -> Makes 5 data cubes from the SDSS data, each of size (15, 1, 512, 512)
+
+AUTHOR
+    Joshua S. Bloom (UC Berkeley)
+
+"""
+
+
 from functools import partial
 import warnings
 from pathlib import Path
@@ -13,6 +65,7 @@ from astropy.wcs import FITSFixedWarning
 from astropy.wcs import WCS
 from astropy.nddata import Cutout2D
 
+import fire
 
 import reproject
 from reproject.mosaicking import find_optimal_celestial_wcs, reproject_and_coadd
@@ -396,6 +449,9 @@ def make_sample(
     random_state : int or random.RandomState
         The random state to use for the sample, default is 42
     """
+    print(
+        f"{max_mosaics_per_band=} {bands=} {size=} {data_dir=} {n_sample=} {random_state=}"
+    )
 
     df_clean = clean_stripe82_fields()
     df_sample = df_clean.sample(n_sample, random_state=random_state)
@@ -416,3 +472,7 @@ def make_sample(
             bands=bands,
             max_mosaics_per_band=max_mosaics_per_band,
         )
+
+
+if __name__ == "__main__":
+    fire.Fire(make_sample)
