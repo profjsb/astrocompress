@@ -391,7 +391,7 @@ def make_data_cube_around_loc(
                 position=sky_center,
                 size=size,
                 wcs=WCS(im[0].header),
-                mode="strict",
+                mode="partial", fill_value=0
             ).data.T[::-1, :]
 
     fname = (
