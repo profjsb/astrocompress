@@ -10,16 +10,19 @@ from astropy.io import ascii
 
 koa_source_dir = Path("KOA")
 data_dir = Path("../data/integer/")
-instruments = ["esi", "hires", "lris", "nirc1", "nirc2"]
-modes = ["imaging", "spectroscopy"]
+#instruments = ["esi", "hires", "lris", "nirc1", "nirc2"]
+instruments = ["lris"]
+#modes = ["imaging", "spectroscopy"]
+modes = ["imaging"]
 testing = True
-
+#im_types = ["sci", "calib"]
+im_types = ["sci"]
 
 def download_data(testing=False):
 
     for instrument in instruments:
         for mode in modes:
-            for im_type in ["sci", "calib"]:
+            for im_type in im_types:
                 out_dir = Path(f"../data/integer/{mode}/{im_type}/")
                 out_dir.mkdir(parents=True, exist_ok=True)
                 fname = (
